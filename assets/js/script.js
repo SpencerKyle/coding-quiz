@@ -1,4 +1,5 @@
 var timerId
+var time = 60;
 var currentQuestionId = 0;
 
 //questions
@@ -25,24 +26,52 @@ var questions = [
     },
 ]
 
+//highscores
+
+var highscores = []
+
 // elements
 var startPageEl = document.querySelector('#start-page');
 var questionPageEl = document.querySelector("#question-page");
+var scorePageEl = document.querySelector('#score-page');
 var startButtonEl = document.querySelector('#start-button');
 var choicesEl = document.querySelector('#choice')
 var choiceList = document.querySelector('#choices-list');
+var timeEl = document.querySelector('#time');
+var timerEl = document.querySelector('#timer');
+var feedbackEl = document.querySelector('#feedback');
+var finalScoreEl = document.querySelector('#finalScore');
+var initialEl = document.querySelector('#initials-label');
+var submitButtonEl = document.querySelector('#submit-button');
 
 
 startButtonEl.addEventListener("click", function() {
     startQuiz();
 });
 
+
+
+
 function startQuiz() {
     startPageEl.className = "hidden";
 
     questionPageEl.className = "show";
+    timerEl.className = "show";
+
+    timerId = setInterval(timing, 1000);
+
+    timeEl.textContent = time;
 
     question();
+}
+
+function timing() {
+    time--;
+    timeEl.textContent = ('Timer: ' + time);
+
+    if (time <= 0) {
+        score();
+    }
 }
 
 function question() {
@@ -57,7 +86,7 @@ function question() {
         var choiceListItem = document.createElement("li");
         var choiceButton = document.createElement("button");
         choiceButton.className = "choice";
-        // choiceButton.setAttribute("value", choice);
+        choiceButton.setAttribute("value", currentQuestion.choices[i]);
 
         
         choiceButton.textContent = currentQuestion.choices[i];
@@ -66,31 +95,71 @@ function question() {
         choiceList.appendChild(choiceListItem);
     };
 
-    // var choiceButtonEl = document.querySelector(".choice");
-
-    // choiceButtonEl.addEventListener("click", function() {
-    //     answerCheck();
-    // })
-
     const choiceButtonEl = document.querySelectorAll('.choice');
     if (choiceButtonEl.length !== 0) {
       for (var i=0; i<choiceButtonEl.length; i++) {
         choiceButtonEl[i].addEventListener('click', function () {
-          answerCheck();
+            var answers = this.value;
+            answerCheck(answers);
         });
       }
     }
-
 }
 
-function answerCheck() {
+function answerCheck(answers) {
+
+    if (answers !== questions[currentQuestionId].answer) {
+        time -= 10;
+        console.log("incorrect")
+    }
+
+    if (time<0) {
+        time = 0;
+    }
+
     currentQuestionId++;
 
     if (currentQuestionId === questions.length) {
-        alert('You are DONE!')
+        end();
     } else {
         question();
     }
+}
+
+function end() {
+    questionPageEl.className = "hidden";
+    scorePageEl.className = "show";
+
+    clearInterval(timerId);
+
+    finalScoreEl.textContent = time + '!';
 
 }
+
+function saveScore() {
+    var highscores = JSON.parse(window.localStorage.getItem("highscores")) || [];
+
+    var newScore = {
+        score: time,
+        initials: initialEl.value
+    }
+
+    highscores.push(newScore);
+    window.localStorage.setItem("highscores", JSON.stringify(highscores));
+
+}
+
+submitButtonEl.addEventListener("click", function() {
+    saveScore();
+});
+
+// function viewHighScores() {
+    
+
+//     for (let i = 0; i < highscores.length; i++) {
+//         console.log(highscores.initials);
+//     }
+// }
+
+
 

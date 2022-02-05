@@ -10,8 +10,11 @@
 <body>
     <main>
         <nav>
-            <a href="#scores">Click here to view High Scores</a>
-            <span>timer: 00</span>
+            <a href="./highscores.html">Click here to view High Scores</a>
+            <div id='timer' class="hidden">
+              <span id="time"></span>
+            </div>
+           
         </nav>
         
         <div id="start-page">
@@ -24,8 +27,21 @@
                 <h1 id="question-title"></h1>
                 <ul id="choices-list"></ul>
             </div>
+            <div>
+                <p id="feedback"></p>
+            </div>
         </div>
-        
+
+        <div id="score-page" class="hidden">
+            <h1>Final score: <span id="finalScore">00</span></h1>
+
+            <p>Enter initials below and hit 'save'</p>
+            <form id="highscoreForm">
+                <label for="initials-input">Initials:</label>
+                <input type="text" id="initials-label" name="initials-label">
+                <button type="submit" id="submit-button">Save</button>
+            </form>
+        </div>        
     </main>
     <!-- js stuff -->
     <script src="./assets/js/script.js"></script>
